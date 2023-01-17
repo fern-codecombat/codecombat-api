@@ -1,0 +1,30 @@
+services:
+  http:
+    StatsService:
+      auth: true
+      base-path: ''
+      endpoints:
+        getPlaytimeStats:
+          path: /playtime-stats
+          method: GET
+          docs: Returns the playtime stats
+          response: PlaytimeStatsResponse
+
+        getLicenseStats:
+          path: /license-stats
+          method: GET
+          docs: Returns the license stats
+          response: LicenseStatsResponse
+
+types:
+  PlaytimeStatsResponse:
+    properties:
+      playTime: optional<double>
+      gamesPlayed: optional<double>
+
+  LicenseStatsResponse:
+    properties:
+      licenseDaysGranted: optional<double>
+      licenseDaysUsed: optional<double>
+      licenseDaysRemaining: optional<double>
+      activeLicenses: optional<double>

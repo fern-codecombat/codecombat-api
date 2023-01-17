@@ -1,0 +1,29 @@
+services:
+  http:
+    AuthService:
+      auth: true
+      base-path: /auth
+      endpoints:
+        get:
+          docs: Logs a user in.
+          path: /login-o-auth
+          method: GET
+          request: 
+            name: LoginUserRequest
+            query-parameters:
+              provider: 
+                type: string
+                docs: Your OAuth Provider ID
+              accessToken: 
+                type: optional<string>
+                docs: Will be passed through your lookup URL to get the user ID. Required if no code.
+              code: 
+                type: optional<string>
+                docs: Will be passed to the OAuth token endpoint to get a token. Required if no accessToken.
+              redirect: 
+                type: optional<string>
+                docs: Override where the user will navigate to after successfully logging in.
+              errorRedirect: 
+                type: optional<string> 
+                docs: | 
+                  If an error happens, redirects the user to this url, with at least query parameters code, errorName and message.

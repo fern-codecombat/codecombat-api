@@ -1,0 +1,40 @@
+imports: 
+  commons: commons.yml
+
+types:
+  ClanResponse:
+    docs: Subset of properties listed here
+    properties:
+      _id: optional<commons.ObjectId>
+      name: optional<string>
+      displayName: optional<string>
+      members: optional<list<commons.ObjectId>>
+      ownerID: optional<commons.ObjectId>
+      description: optional<string>
+      type: optional<string>
+      kind: optional<string>
+
+services:
+  http:
+    ClansService:
+      auth: true
+      base-path: /clan
+      endpoints:
+        put:
+          path: /{handle}/members
+          method: PUT
+          docs: Upserts a user into the clan.
+          path-parameters:
+            handle:
+              docs: The document's `_id` or `slug`.
+              type: string
+          request:
+            name: ClanRequest
+            query-parameters:
+              handle:
+                docs: The document's `_id` or `slug`.
+                type: string
+            body:
+              properties:
+                userId: string
+          response: ClanResponse

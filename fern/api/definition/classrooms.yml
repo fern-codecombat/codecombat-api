@@ -1,0 +1,230 @@
+imports: 
+  commons: commons.yml
+
+services:
+  http:
+    ClassroomsService:
+      auth: true
+      base-path: /classrooms
+      endpoints:
+        get:
+          path: ""
+          method: GET
+          docs: Returns the classroom details for a class code.
+          response: ClassroomResponseWithCode
+        
+        create:
+          path: ""
+          method: POST
+          docs: Creates a new empty `Classroom`.
+          request:
+            name: CreateClassroomRequest
+            body:
+              properties:
+                name: string
+                ownerID: commons.ObjectId
+                aceConfig: AceConfig
+
+        upsert:
+          path: /{handle}/members
+          method: PUT
+          docs: Upserts a user into the classroom.
+          path-parameters:
+            handle:
+              docs: The document's `_id` or `slug`.
+              type: string
+          request:
+            name: UpsertClassroomRequest
+            query-parameters:
+              handle:
+                docs: The document's `_id` or `slug`.
+                type: string
+            body:
+              properties:
+                code: string
+                userId: string
+                retMemberLimit: optional<double>
+          response: commons.ClassroomResponse
+
+        removeUser:
+          path: /{handle}/members
+          method: DELETE
+          docs: Remove a user from the classroom.
+          path-parameters:
+            handle:
+              docs: The document's `_id` or `slug`.
+              type: string
+          request:
+            name: RemoveUserRequest
+            query-parameters:
+              handle:
+                docs: The document's `_id` or `slug`.
+                type: string
+            body:
+              properties:
+                userId: string
+                retMemberLimit: optional<double>
+          response: commons.ClassroomResponse
+
+        enrollUser:
+          path: /{classroomHandle}/courses/{courseHandle}/enrolled
+          method: PUT
+          docs: |
+            Enrolls a user in a course in a classroom.
+            If the course is paid, user must have an active license.
+            User must be a member of the classroom.
+          path-parameters:
+            classroomHandle:
+              docs: The classroom's `_id`.
+              type: string
+            courseHandle:
+              docs: The course's `_id`.
+              type: string
+          request:
+            name: EnrollUserRequest
+            query-parameters:
+              classroomHandle:
+                docs: The classroom's `_id`.
+                type: string
+              courseHandle:
+                docs: The course's `_id`.
+                type: string
+            body:
+              properties:
+                userId: commons.ObjectId
+          response: commons.ClassroomResponse
+
+        unenrollUser:
+          path: /{classroomHandle}/courses/{courseHandle}/remove-enrolled
+          method: PUT
+          docs: |
+            Removes an enrolled user from a course in a classroom.
+          path-parameters:
+            classroomHandle:
+              docs: The classroom's `_id`.
+              type: string
+            courseHandle:
+              docs: The course's `_id`.
+              type: string
+          request:
+            name: UnenrollUserRequest
+            query-parameters:
+              classroomHandle:
+                docs: The classroom's `_id`.
+                type: string
+              courseHandle:
+                docs: The course's `_id`.
+                type: string
+            body:
+              properties:
+                userId: commons.ObjectId
+          response: commons.ClassroomResponse
+
+        getStats:
+          path: /{classroomHandle}/stats
+          method: GET
+          docs: |
+            Returns a list of all members stats for the classroom.
+          path-parameters:
+            classroomHandle:
+              docs: The classroom's `_id`.
+              type: string
+          request:
+            name: ClassroomStatsRequest
+            query-parameters:
+              classroomHandle:
+                docs: The classroom's `_id`.
+                type: string
+          response: list<ClassroomStats>
+          
+        getLevelsPlayedForUser:
+          path: /{classroomHandle}/members/{memberHandle}/sessions
+          method: GET
+          docs: |
+            Returns a list of all levels played by the user for the classroom.
+          path-parameters:
+            classroomHandle:
+              docs: The classroom's `_id`.
+              type: string
+            memberHandle:
+              docs: The classroom member's `_id`.
+              type: string
+          request:
+            name: GetLevelsPlayedForUserRequest
+            query-parameters:
+              classroomHandle:
+                docs: The classroom's `_id`.
+                type: string
+              memberHandle:
+                docs: The classroom member's `_id`.
+                type: string
+          response: list<LevelSessionResponse>
+
+types:
+  
+  ClassroomResponseWithCode:
+    docs: Subset of properties listed here
+    properties:
+      _id: optional<commons.ObjectId>
+      name: optional<string>
+      members: optional<list<commons.ObjectId>>
+      ownerID: optional<commons.ObjectId>
+      description: optional<string>
+      code: optional<string>
+      codeCamel: optional<string>
+      courses: optional<list<Course>>
+      clanId: optional<commons.ObjectId>
+  
+  Course:
+    properties:
+      _id: optional<commons.ObjectId>
+      levels: optional<list<unknown>>
+      enrolled: optional<list<commons.ObjectId>>
+      instance_id: optional<commons.ObjectId>
+  
+  AceConfig:
+    properties:
+      language: optional<string>
+  
+  ClassroomStats:
+    properties:
+      _id: optional<commons.ObjectId>
+      stats: optional<ClassroomStatsInfo>
+  
+  ClassroomStatsInfo:
+    properties:
+      gamesCompleted: optional<double>
+      playtime: optional<double>
+  
+  LevelSessionResponse:
+    properties:
+      state: LevelSessionState
+      level: LevelSessionLevelInfo
+      levelID:
+        type: string
+        docs: Level slug like `wakka-maul`
+      creator: commons.ObjectId
+      playtime:
+        type: integer
+        docs: Time played in seconds.
+      changed: commons.Datetime
+      created: commons.Datetime
+      dateFirstCompleted: commons.Datetime
+      submitted:
+        type: boolean
+        docs: For arenas. Whether or not the level has been added to the ladder.
+      published:
+        type: boolean
+        docs: For shareable projects. Whether or not the project has been shared
+          with classmates.
+  
+  LevelSessionState: 
+    properties:
+      complete:
+        type: boolean
+  
+  LevelSessionLevelInfo: 
+    properties: 
+      original:
+        type: string
+        docs: The id for the level.
