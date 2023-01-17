@@ -11,6 +11,15 @@ services:
           path: ""
           method: GET
           docs: Returns the classroom details for a class code.
+          request: 
+            name: GetClassroomRequest
+            query-parameters: 
+              code: 
+                type: string
+                docs: The classroom’s `code`
+              retMemberLimit: 
+                type: integer
+                docs: limit the return number of members for the classroom
           response: ClassroomResponseWithCode
         
         create:
