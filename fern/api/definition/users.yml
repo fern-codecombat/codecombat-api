@@ -34,10 +34,6 @@ services:
               type: string
           request:
             name: GetUserRequest
-            query-parameters:
-              handle:
-                docs: The document's `_id` or `slug`.
-                type: string
           response: commons.UserResponse
 
         modifyUser:
@@ -50,10 +46,6 @@ services:
               type: string
           request:
             name: ModifyUserRequest
-            query-parameters:
-              handle:
-                docs: The document's `_id` or `slug`.
-                type: string
             body:
               properties:
                 name: string
@@ -72,10 +64,6 @@ services:
               type: string
           request:
             name: GetUserClassroomsRequest
-            query-parameters:
-              handle:
-                docs: The document's `_id` or `slug`.
-                type: string
           response: list<classrooms.ClassroomResponseWithCode>
 
         setHero:
@@ -88,10 +76,6 @@ services:
               type: string
           request:
             name: SetHeroRequest
-            query-parameters:
-              handle:
-                docs: The document's `_id` or `slug`.
-                type: string
             body:
               properties:
                 thangType: optional<commons.ObjectId>
@@ -109,10 +93,6 @@ services:
               type: string
           request:
             name: SetAceConfigRequest
-            query-parameters:
-              handle:
-                docs: The document's `_id` or `slug`.
-                type: string
             body:
               properties:
                 liveCompletion: optional<boolean>
@@ -143,10 +123,6 @@ services:
               type: string
           request:
             name: AddOauth2IdentityRequest
-            query-parameters:
-              handle:
-                docs: The document's `_id` or `slug`.
-                type: string
             body:
               properties:
                 provider: string
@@ -165,13 +141,7 @@ services:
             handle:
               docs: The document's `_id` or `slug`.
               type: string
-          request:
-            name: GrantUserPremiumAccessRequest
-            query-parameters:
-              handle:
-                docs: The document's `_id` or `slug`.
-                type: string
-            body: commons.Subscription
+          request: commons.Subscription
           response: commons.UserResponse
 
         shortenSubscription:
@@ -190,10 +160,6 @@ services:
               type: string
           request:
             name: ShortenSubscriptionRequest
-            query-parameters:
-              handle:
-                docs: The document's `_id` or `slug`.
-                type: string
             body: commons.Subscription
           response: commons.UserResponse
 
@@ -211,10 +177,6 @@ services:
               type: string
           request:
             name: GrantUserClassroomAccessRequest
-            query-parameters:
-              handle:
-                docs: The document's `_id` or `slug`.
-                type: string
             body: commons.Subscription
           response: commons.UserResponse
         
@@ -234,10 +196,6 @@ services:
               type: string
           request:
             name: ShortenLicenseRequest
-            query-parameters:
-              handle:
-                docs: The document's `_id` or `slug`.
-                type: string
             body: commons.Subscription
           response: commons.UserResponse
 
