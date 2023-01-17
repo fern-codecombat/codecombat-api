@@ -1,4 +1,62 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
-
 types:
-  id: string
+  
+  UserResponse:
+    docs: Subset of properties listed here
+    properties:
+      _id: optional<ObjectId>
+      email: optional<string>
+      name: optional<string>
+      slug: optional<string>
+      role: optional<roleString>
+      stats: optional<UserStats>
+      oAuthIdentities: optional<list<OauthIdentity>>
+      subscription: optional<Subscription>
+      license: optional<License>
+
+  UserStats:
+    properties:
+      gamesCompleted: optional<double>
+      playTime: optional<double>
+
+  OauthIdentity:
+    properties:
+      provider: optional<string>
+      id: optional<string>
+
+  Subscription:
+    properties:
+      ends: optional<Datetime>
+      active: optional<boolean>
+
+  License:
+    properties:
+      ends: optional<Datetime>
+      active: optional<boolean>
+
+  ObjectId: string
+
+  Datetime: 
+    type: string
+    docs: | 
+      Has regex "/^\\d{4}-\\d{2}-\\d{2}T\\d{2}\\:\\d{2}\\:\\d{2}\\.\\d{3}Z$/"
+
+  roleString:
+    docs: Usually either 'teacher' or 'student'
+    type: string
+
+  ClassroomResponse:
+    docs: Subset of properties listed here
+    properties:
+      _id: optional<ObjectId>
+      name: optional<string>
+      members: optional<list<ObjectId>>
+      ownerID: optional<ObjectId>
+      description: optional<string>
+      courses: optional<list<_InlinedType23>>
+      
+  _InlinedType23:
+    properties:
+      _id: optional<ObjectId>
+      levels: optional<list<unknown>>
+      enrolled: optional<list<ObjectId>>
+      instance_id: optional<ObjectId>
