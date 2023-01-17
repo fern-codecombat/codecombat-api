@@ -30,10 +30,6 @@ services:
               type: string
           request:
             name: ClanRequest
-            query-parameters:
-              handle:
-                docs: The document's `_id` or `slug`.
-                type: string
             body:
               properties:
                 userId: string

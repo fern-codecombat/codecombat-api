@@ -35,10 +35,6 @@ services:
               type: string
           request:
             name: UpsertClassroomRequest
-            query-parameters:
-              handle:
-                docs: The document's `_id` or `slug`.
-                type: string
             body:
               properties:
                 code: string
@@ -56,10 +52,6 @@ services:
               type: string
           request:
             name: RemoveUserRequest
-            query-parameters:
-              handle:
-                docs: The document's `_id` or `slug`.
-                type: string
             body:
               properties:
                 userId: string
