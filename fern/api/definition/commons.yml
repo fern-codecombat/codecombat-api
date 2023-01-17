@@ -52,9 +52,9 @@ types:
       members: optional<list<ObjectId>>
       ownerID: optional<ObjectId>
       description: optional<string>
-      courses: optional<list<_InlinedType23>>
+      courses: optional<list<Course>>
       
-  _InlinedType23:
+  Course:
     properties:
       _id: optional<ObjectId>
       levels: optional<list<unknown>>

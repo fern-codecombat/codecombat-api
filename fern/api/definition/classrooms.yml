@@ -172,15 +172,8 @@ types:
       description: optional<string>
       code: optional<string>
       codeCamel: optional<string>
-      courses: optional<list<Course>>
+      courses: optional<list<commons.Course>>
       clanId: optional<commons.ObjectId>
-  
-  Course:
-    properties:
-      _id: optional<commons.ObjectId>
-      levels: optional<list<unknown>>
-      enrolled: optional<list<commons.ObjectId>>
-      instance_id: optional<commons.ObjectId>
   
   AceConfig:
     properties:
