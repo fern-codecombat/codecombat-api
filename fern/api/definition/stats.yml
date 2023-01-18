@@ -8,6 +8,18 @@ services:
           path: /playtime-stats
           method: GET
           docs: Returns the playtime stats
+          request: 
+            name: GetPlaytimeStatsRequest
+            query-parameters:
+              startDate:
+                docs: Earliest an included user was created
+                type: optional<string>
+              endDate:
+                docs: Latest an included user was created
+                type: optional<string>
+              country:
+                docs: Filter by country string
+                type: optional<string>
           response: PlaytimeStatsResponse
 
         getLicenseStats:
