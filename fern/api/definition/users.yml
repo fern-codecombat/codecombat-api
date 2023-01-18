@@ -34,6 +34,10 @@ services:
               type: string
           request:
             name: GetUserRequest
+            query-parameters:
+              includePlayTime:
+                docs: Set to non-empty string to include stats.playTime in response
+                type: optional<string>
           response: commons.UserResponse
 
         modifyUser:
@@ -64,6 +68,10 @@ services:
               type: string
           request:
             name: GetUserClassroomsRequest
+            query-parameters:
+              retMemberLimit:
+                docs: limit the return number of members for each classroom
+                type: optional<double>
           response: list<classrooms.ClassroomResponseWithCode>
 
         setHero:
@@ -212,17 +220,6 @@ services:
             value:
               docs: The value to be looked up.
               type: string
-          request:
-            name: LookupUserRequest
-            query-parameters:
-              property:
-                docs: >-
-                  The property to lookup by. May either be `"israel-id"` or
-                  `"name"`.
-                type: string
-              value:
-                docs: The value to be looked up.
-                type: string
 
 types:
   HeroConfig:

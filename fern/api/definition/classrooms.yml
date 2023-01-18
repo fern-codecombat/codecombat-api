@@ -13,13 +13,13 @@ services:
           docs: Returns the classroom details for a class code.
           request: 
             name: GetClassroomRequest
-            query-parameters: 
-              code: 
+            query-parameters:
+              code:
+                docs: The classroom's `code`.
                 type: string
-                docs: The classroom’s `code`
-              retMemberLimit: 
-                type: integer
+              retMemberLimit:
                 docs: limit the return number of members for the classroom
+                type: optional<double>
           response: ClassroomResponseWithCode
         
         create:
@@ -84,12 +84,11 @@ services:
           request:
             name: EnrollUserRequest
             query-parameters:
-              classroomHandle:
-                docs: The classroom's `_id`.
-                type: string
-              courseHandle:
-                docs: The course's `_id`.
-                type: string
+              retMemberLimit:
+                docs: >-
+                  limit the return number of members for the classroom, the
+                  default value is 1000
+                type: optional<double>
             body:
               properties:
                 userId: commons.ObjectId
@@ -110,12 +109,11 @@ services:
           request:
             name: UnenrollUserRequest
             query-parameters:
-              classroomHandle:
-                docs: The classroom's `_id`.
-                type: string
-              courseHandle:
-                docs: The course's `_id`.
-                type: string
+              retMemberLimit:
+                docs: >-
+                  limit the return number of members for the classroom, the
+                  default value is 1000
+                type: optional<double>
             body:
               properties:
                 userId: commons.ObjectId
@@ -133,9 +131,21 @@ services:
           request:
             name: ClassroomStatsRequest
             query-parameters:
-              classroomHandle:
-                docs: The classroom's `_id`.
-                type: string
+              project:
+                docs: >
+                  If specified, include only the specified projection of
+                  returned stats; else, return all stats. Format as a
+                  comma-separated list, like `creator,playtime,state.complete`.
+                type: optional<string>
+              memberLimit:
+                docs: >-
+                  Limit the return member number. the default value is 10, and
+                  the max value is 100
+                type: optional<double>
+              memberSkip:
+                docs: |
+                  Skip the members that doesn't need to return, for pagination
+                type: optional<double>
           response: list<ClassroomStats>
           
         getLevelsPlayedForUser:
@@ -150,15 +160,6 @@ services:
             memberHandle:
               docs: The classroom member's `_id`.
               type: string
-          request:
-            name: GetLevelsPlayedForUserRequest
-            query-parameters:
-              classroomHandle:
-                docs: The classroom's `_id`.
-                type: string
-              memberHandle:
-                docs: The classroom member's `_id`.
-                type: string
           response: list<LevelSessionResponse>
 
 types:
