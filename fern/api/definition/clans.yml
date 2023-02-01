@@ -1,4 +1,4 @@
-imports: 
+imports:
   commons: commons.yml
 
 types:
@@ -14,23 +14,21 @@ types:
       type: optional<string>
       kind: optional<string>
 
-services:
-  http:
-    ClansService:
-      auth: true
-      base-path: /clan
-      endpoints:
-        put:
-          path: /{handle}/members
-          method: PUT
-          docs: Upserts a user into the clan.
-          path-parameters:
-            handle:
-              docs: The document's `_id` or `slug`.
-              type: string
-          request:
-            name: ClanRequest
-            body:
-              properties:
-                userId: string
-          response: ClanResponse
+service:
+  auth: true
+  base-path: /clan
+  endpoints:
+    put:
+      path: /{handle}/members
+      method: PUT
+      docs: Upserts a user into the clan.
+      path-parameters:
+        handle:
+          docs: The document's `_id` or `slug`.
+          type: string
+      request:
+        name: ClanRequest
+        body:
+          properties:
+            userId: string
+      response: ClanResponse

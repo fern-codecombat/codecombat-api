@@ -1,8 +1,9 @@
+default-group: external
 groups:
   external:
     generators:
       - name: fernapi/fern-typescript-sdk
-        version: 0.0.258
+        version: 0.0.273
         output:
           location: npm
           package-name: '@fern-api/codecombat'
@@ -10,6 +11,6 @@ groups:
         github:
           repository: fern-codecombat/codecombat-node
       - name: fernapi/fern-openapi
-        version: 0.0.16
+        version: 0.0.19
         github:
           repository: fern-codecombat/codecombat-openapi

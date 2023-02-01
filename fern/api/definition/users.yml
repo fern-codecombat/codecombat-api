@@ -1,225 +1,212 @@
-imports: 
+imports:
   commons: commons.yml
   classrooms: classrooms.yml
 
-services:
-  http:
-    UsersService:
-      auth: true
-      base-path: /users
-      endpoints:
+service:
+  auth: true
+  base-path: /users
+  endpoints:
 
-        create:
-          path: ""
-          method: POST
-          docs: Creates a `User`.
-          request:
-            name: CreateUserRequest
-            body:
-              properties:
-                name: string
-                email: string
-                role: optional<string>
-                preferredLanguage: optional<string>
-                heroConfig: optional<HeroConfig>
-                birthday: optional<string>
+    create:
+      path: ""
+      method: POST
+      docs: Creates a `User`.
+      request:
+        name: CreateUserRequest
+        body:
+          properties:
+            name: string
+            email: string
+            role: optional<string>
+            preferredLanguage: optional<string>
+            heroConfig: optional<HeroConfig>
+            birthday: optional<string>
 
-        get:
-          path: /{handle}
-          method: GET
-          docs: Returns a `User`.
-          path-parameters:
-            handle:
-              docs: The document's `_id` or `slug`.
-              type: string
-          request:
-            name: GetUserRequest
-            query-parameters:
-              includePlayTime:
-                docs: Set to non-empty string to include stats.playTime in response
-                type: optional<string>
-          response: commons.UserResponse
+    get:
+      path: /{handle}
+      method: GET
+      docs: Returns a `User`.
+      path-parameters:
+        handle:
+          docs: The document's `_id` or `slug`.
+          type: string
+      request:
+        name: GetUserRequest
+        query-parameters:
+          includePlayTime:
+            docs: Set to non-empty string to include stats.playTime in response
+            type: optional<string>
+      response: commons.UserResponse
 
-        modifyUser:
-          path: /{handle}
-          method: PUT
-          docs: Modify name of a `User`
-          path-parameters:
-            handle:
-              docs: The document's `_id` or `slug`.
-              type: string
-          request:
-            name: ModifyUserRequest
-            body:
-              properties:
-                name: string
-                birthday: optional<string>
-          response: commons.UserResponse
-      
-        getClassrooms:
-          path: /{handle}/classrooms
-          method: GET
+    modifyUser:
+      path: /{handle}
+      method: PUT
+      docs: Modify name of a `User`
+      path-parameters:
+        handle:
+          docs: The document's `_id` or `slug`.
+          type: string
+      request:
+        name: ModifyUserRequest
+        body:
+          properties:
+            name: string
+            birthday: optional<string>
+      response: commons.UserResponse
+
+    getClassrooms:
+      path: /{handle}/classrooms
+      method: GET
+      docs: >-
+        Returns a list of `Classrooms` this user is in (if a student) or owns (if
+        a teacher).
+      path-parameters:
+        handle:
+          docs: The document's `_id` or `slug`.
+          type: string
+      request:
+        name: GetUserClassroomsRequest
+        query-parameters:
+          retMemberLimit:
+            docs: limit the return number of members for each classroom
+            type: optional<double>
+      response: list<classrooms.ClassroomResponseWithCode>
+
+    setHero:
+      path: /{handle}/hero-config
+      method: PUT
+      docs: Set the user's hero.
+      path-parameters:
+        handle:
+          docs: The document's `_id` or `slug`.
+          type: string
+      request:
+        name: SetHeroRequest
+        body:
+          properties:
+            thangType: optional<commons.ObjectId>
+      response: commons.UserResponse
+
+    setAceConfig:
+      path: /{handle}/ace-config
+      method: PUT
+      docs: >-
+        Set the user's aceConfig (the settings for the in-game Ace code editor),
+        such as whether to enable autocomplete.
+      path-parameters:
+        handle:
+          docs: The document's `_id` or `slug`.
+          type: string
+      request:
+        name: SetAceConfigRequest
+        body:
+          properties:
+            liveCompletion: optional<boolean>
+            behaviors: optional<boolean>
+            language: optional<string>
+      response: commons.UserResponse
+
+    addOauth2Identity:
+      path: /{handle}/o-auth-identities
+      method: POST
+      docs: >
+        Adds an OAuth2 identity to the user, so that they can be logged in with
+        that identity. You need to send the OAuth code or the access token to
+        this endpoint.
+
+        1. If no access token is provided, it will use your OAuth2 token URL to exchange the given code for an access token.
+
+        2. Then it will use the access token (given by you, or received from step 1) to look up the user on your service using the lookup URL, and expects a JSON object in response with an `id` property.
+
+        3. It will then save that user `id` to the user in our db as a new OAuthIdentity.
+      path-parameters:
+        handle:
+          docs: The document's `_id` or `slug`.
+          type: string
+      request:
+        name: AddOauth2IdentityRequest
+        body:
+          properties:
+            provider: string
+            accessToken: optional<string>
+            code: optional<string>
+      response: commons.UserResponse
+
+    grantPremiumAccess:
+      path: /{handle}/subscription
+      method: PUT
+      docs: >
+        Grants a user premium access to the "Home" version up to a certain time.
+        ```
+      path-parameters:
+        handle:
+          docs: The document's `_id` or `slug`.
+          type: string
+      request: commons.Subscription
+      response: commons.UserResponse
+
+    shortenSubscription:
+      path: /{handle}/shorten-subscription
+      method: PUT
+      docs: >
+        If the user already has a premium access up to a certain time, this
+        shortens/revokes his/her premium access.
+
+        If the ends is less than or equal to the current time, it revokes the subscription and sets the end date to be the current time, else it just shortens the subscription.
+      path-parameters:
+        handle:
+          docs: The document's `_id` or `slug`.
+          type: string
+      request:
+        name: ShortenSubscriptionRequest
+        body: commons.Subscription
+      response: commons.UserResponse
+
+    grantClassroomAccess:
+      path: /{handle}/license
+      method: PUT
+      docs: >
+        Grants a user access to the "Classroom" version up to a certain time.
+
+        Sets their role to "student".
+      path-parameters:
+        handle:
+          docs: The document's `_id` or `slug`.
+          type: string
+      request:
+        name: GrantUserClassroomAccessRequest
+        body: commons.Subscription
+      response: commons.UserResponse
+
+    shortenLicense:
+      path: /{handle}/shorten-license
+      method: PUT
+      docs: >
+        If the user already has access to the "Classroom" version up to a certain
+        time, this shortens/revokes his/her access.
+
+        If the ends is less than or equal to the current time, it revokes the enrollment and sets the end date to be the current time, else it just shortens the enrollment.
+      path-parameters:
+        handle:
+          docs: The document's `_id` or `slug`.
+          type: string
+      request:
+        name: ShortenLicenseRequest
+        body: commons.Subscription
+      response: commons.UserResponse
+
+    lookup:
+      path: /user-lookup/{property}/{value}
+      method: GET
+      docs: Redirects to `/{handle}` given a unique, identifying property
+      path-parameters:
+        property:
           docs: >-
-            Returns a list of `Classrooms` this user is in (if a student) or
-            owns (if a teacher).
-          path-parameters:
-            handle:
-              docs: The document's `_id` or `slug`.
-              type: string
-          request:
-            name: GetUserClassroomsRequest
-            query-parameters:
-              retMemberLimit:
-                docs: limit the return number of members for each classroom
-                type: optional<double>
-          response: list<classrooms.ClassroomResponseWithCode>
-
-        setHero:
-          path: /{handle}/hero-config
-          method: PUT
-          docs: Set the user's hero.
-          path-parameters:
-            handle:
-              docs: The document's `_id` or `slug`.
-              type: string
-          request:
-            name: SetHeroRequest
-            body:
-              properties:
-                thangType: optional<commons.ObjectId>
-          response: commons.UserResponse
-        
-        setAceConfig:
-          path: /{handle}/ace-config
-          method: PUT
-          docs: >-
-            Set the user's aceConfig (the settings for the in-game Ace code
-            editor), such as whether to enable autocomplete.
-          path-parameters:
-            handle:
-              docs: The document's `_id` or `slug`.
-              type: string
-          request:
-            name: SetAceConfigRequest
-            body:
-              properties:
-                liveCompletion: optional<boolean>
-                behaviors: optional<boolean>
-                language: optional<string>
-          response: commons.UserResponse
-
-        addOauth2Identity:
-          path: /{handle}/o-auth-identities
-          method: POST
-          docs: >
-            Adds an OAuth2 identity to the user, so that they can be logged in
-            with that identity. You need to send the OAuth code or the access
-            token to this endpoint.
-
-            1. If no access token is provided, it will use your OAuth2 token URL
-            to exchange the given code for an access token.
-
-            2. Then it will use the access token (given by you, or received from
-            step 1) to look up the user on your service using the lookup URL,
-            and expects a JSON object in response with an `id` property.
-
-            3. It will then save that user `id` to the user in our db as a new
-            OAuthIdentity.
-          path-parameters:
-            handle:
-              docs: The document's `_id` or `slug`.
-              type: string
-          request:
-            name: AddOauth2IdentityRequest
-            body:
-              properties:
-                provider: string
-                accessToken: optional<string>
-                code: optional<string>
-          response: commons.UserResponse
-
-        grantPremiumAccess:
-          path: /{handle}/subscription
-          method: PUT
-          docs: >
-            Grants a user premium access to the "Home" version up to a certain
-            time.
-            ```
-          path-parameters:
-            handle:
-              docs: The document's `_id` or `slug`.
-              type: string
-          request: commons.Subscription
-          response: commons.UserResponse
-
-        shortenSubscription:
-          path: /{handle}/shorten-subscription
-          method: PUT
-          docs: >
-            If the user already has a premium access up to a certain time, this
-            shortens/revokes his/her premium access.
-
-            If the ends is less than or equal to the current time, it revokes
-            the subscription and sets the end date to be the current time, else
-            it just shortens the subscription.
-          path-parameters:
-            handle:
-              docs: The document's `_id` or `slug`.
-              type: string
-          request:
-            name: ShortenSubscriptionRequest
-            body: commons.Subscription
-          response: commons.UserResponse
-
-        grantClassroomAccess:
-          path: /{handle}/license
-          method: PUT
-          docs: >
-            Grants a user access to the "Classroom" version up to a certain
-            time.
-
-            Sets their role to "student".
-          path-parameters:
-            handle:
-              docs: The document's `_id` or `slug`.
-              type: string
-          request:
-            name: GrantUserClassroomAccessRequest
-            body: commons.Subscription
-          response: commons.UserResponse
-        
-        shortenLicense:
-          path: /{handle}/shorten-license
-          method: PUT
-          docs: >
-            If the user already has access to the "Classroom" version up to a
-            certain time, this shortens/revokes his/her access.
-
-            If the ends is less than or equal to the current time, it revokes
-            the enrollment and sets the end date to be the current time, else it
-            just shortens the enrollment.
-          path-parameters:
-            handle:
-              docs: The document's `_id` or `slug`.
-              type: string
-          request:
-            name: ShortenLicenseRequest
-            body: commons.Subscription
-          response: commons.UserResponse
-
-        lookup:
-          path: /user-lookup/{property}/{value}
-          method: GET
-          docs: Redirects to `/{handle}` given a unique, identifying property
-          path-parameters:
-            property:
-              docs: >-
-                The property to lookup by. May either be `"israel-id"` or
-                `"name"`.
-              type: string
-            value:
-              docs: The value to be looked up.
-              type: string
+            The property to lookup by. May either be `"israel-id"` or `"name"`.
+          type: string
+        value:
+          docs: The value to be looked up.
+          type: string
 
 types:
   HeroConfig:

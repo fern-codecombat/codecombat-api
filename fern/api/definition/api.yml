@@ -2,7 +2,7 @@ name: api
 display-name: CodeCombat API
 auth: basic
 environments:
-  Production: https://codecombat.com/api 
+  Production: https://codecombat.com/api
 default-environment: Production
 error-discrimination:
   strategy: status-code

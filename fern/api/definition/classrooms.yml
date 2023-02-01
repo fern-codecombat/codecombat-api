@@ -1,169 +1,167 @@
-imports: 
+imports:
   commons: commons.yml
 
-services:
-  http:
-    ClassroomsService:
-      auth: true
-      base-path: /classrooms
-      endpoints:
-        get:
-          path: ""
-          method: GET
-          docs: Returns the classroom details for a class code.
-          request: 
-            name: GetClassroomRequest
-            query-parameters:
-              code:
-                docs: The classroom's `code`.
-                type: string
-              retMemberLimit:
-                docs: limit the return number of members for the classroom
-                type: optional<double>
-          response: ClassroomResponseWithCode
-        
-        create:
-          path: ""
-          method: POST
-          docs: Creates a new empty `Classroom`.
-          request:
-            name: CreateClassroomRequest
-            body:
-              properties:
-                name: string
-                ownerID: commons.ObjectId
-                aceConfig: AceConfig
+service:
+  auth: true
+  base-path: /classrooms
+  endpoints:
+    get:
+      path: ""
+      method: GET
+      docs: Returns the classroom details for a class code.
+      request:
+        name: GetClassroomRequest
+        query-parameters:
+          code:
+            docs: The classroom's `code`.
+            type: string
+          retMemberLimit:
+            docs: limit the return number of members for the classroom
+            type: optional<double>
+      response: ClassroomResponseWithCode
 
-        upsert:
-          path: /{handle}/members
-          method: PUT
-          docs: Upserts a user into the classroom.
-          path-parameters:
-            handle:
-              docs: The document's `_id` or `slug`.
-              type: string
-          request:
-            name: UpsertClassroomRequest
-            body:
-              properties:
-                code: string
-                userId: string
-                retMemberLimit: optional<double>
-          response: commons.ClassroomResponse
+    create:
+      path: ""
+      method: POST
+      docs: Creates a new empty `Classroom`.
+      request:
+        name: CreateClassroomRequest
+        body:
+          properties:
+            name: string
+            ownerID: commons.ObjectId
+            aceConfig: AceConfig
 
-        removeUser:
-          path: /{handle}/members
-          method: DELETE
-          docs: Remove a user from the classroom.
-          path-parameters:
-            handle:
-              docs: The document's `_id` or `slug`.
-              type: string
-          request:
-            name: RemoveUserRequest
-            body:
-              properties:
-                userId: string
-                retMemberLimit: optional<double>
-          response: commons.ClassroomResponse
+    upsert:
+      path: /{handle}/members
+      method: PUT
+      docs: Upserts a user into the classroom.
+      path-parameters:
+        handle:
+          docs: The document's `_id` or `slug`.
+          type: string
+      request:
+        name: UpsertClassroomRequest
+        body:
+          properties:
+            code: string
+            userId: string
+            retMemberLimit: optional<double>
+      response: commons.ClassroomResponse
 
-        enrollUser:
-          path: /{classroomHandle}/courses/{courseHandle}/enrolled
-          method: PUT
-          docs: |
-            Enrolls a user in a course in a classroom.
-            If the course is paid, user must have an active license.
-            User must be a member of the classroom.
-          path-parameters:
-            classroomHandle:
-              docs: The classroom's `_id`.
-              type: string
-            courseHandle:
-              docs: The course's `_id`.
-              type: string
-          request:
-            name: EnrollUserRequest
-            query-parameters:
-              retMemberLimit:
-                docs: >-
-                  limit the return number of members for the classroom, the
-                  default value is 1000
-                type: optional<double>
-            body:
-              properties:
-                userId: commons.ObjectId
-          response: commons.ClassroomResponse
+    removeUser:
+      path: /{handle}/members
+      method: DELETE
+      docs: Remove a user from the classroom.
+      path-parameters:
+        handle:
+          docs: The document's `_id` or `slug`.
+          type: string
+      request:
+        name: RemoveUserRequest
+        body:
+          properties:
+            userId: string
+            retMemberLimit: optional<double>
+      response: commons.ClassroomResponse
 
-        unenrollUser:
-          path: /{classroomHandle}/courses/{courseHandle}/remove-enrolled
-          method: PUT
-          docs: |
-            Removes an enrolled user from a course in a classroom.
-          path-parameters:
-            classroomHandle:
-              docs: The classroom's `_id`.
-              type: string
-            courseHandle:
-              docs: The course's `_id`.
-              type: string
-          request:
-            name: UnenrollUserRequest
-            query-parameters:
-              retMemberLimit:
-                docs: >-
-                  limit the return number of members for the classroom, the
-                  default value is 1000
-                type: optional<double>
-            body:
-              properties:
-                userId: commons.ObjectId
-          response: commons.ClassroomResponse
+    enrollUser:
+      path: /{classroomHandle}/courses/{courseHandle}/enrolled
+      method: PUT
+      docs: |
+        Enrolls a user in a course in a classroom.
+        If the course is paid, user must have an active license.
+        User must be a member of the classroom.
+      path-parameters:
+        classroomHandle:
+          docs: The classroom's `_id`.
+          type: string
+        courseHandle:
+          docs: The course's `_id`.
+          type: string
+      request:
+        name: EnrollUserRequest
+        query-parameters:
+          retMemberLimit:
+            docs: >-
+              limit the return number of members for the classroom, the default value is
+              1000
+            type: optional<double>
+        body:
+          properties:
+            userId: commons.ObjectId
+      response: commons.ClassroomResponse
 
-        getStats:
-          path: /{classroomHandle}/stats
-          method: GET
-          docs: |
-            Returns a list of all members stats for the classroom.
-          path-parameters:
-            classroomHandle:
-              docs: The classroom's `_id`.
-              type: string
-          request:
-            name: ClassroomStatsRequest
-            query-parameters:
-              project:
-                docs: >
-                  If specified, include only the specified projection of
-                  returned stats; else, return all stats. Format as a
-                  comma-separated list, like `creator,playtime,state.complete`.
-                type: optional<string>
-              memberLimit:
-                docs: >-
-                  Limit the return member number. the default value is 10, and
-                  the max value is 100
-                type: optional<double>
-              memberSkip:
-                docs: |
-                  Skip the members that doesn't need to return, for pagination
-                type: optional<double>
-          response: list<ClassroomStats>
-          
-        getLevelsPlayedForUser:
-          path: /{classroomHandle}/members/{memberHandle}/sessions
-          method: GET
-          docs: |
-            Returns a list of all levels played by the user for the classroom.
-          path-parameters:
-            classroomHandle:
-              docs: The classroom's `_id`.
-              type: string
-            memberHandle:
-              docs: The classroom member's `_id`.
-              type: string
-          response: list<LevelSessionResponse>
+    unenrollUser:
+      path: /{classroomHandle}/courses/{courseHandle}/remove-enrolled
+      method: PUT
+      docs: |
+        Removes an enrolled user from a course in a classroom.
+      path-parameters:
+        classroomHandle:
+          docs: The classroom's `_id`.
+          type: string
+        courseHandle:
+          docs: The course's `_id`.
+          type: string
+      request:
+        name: UnenrollUserRequest
+        query-parameters:
+          retMemberLimit:
+            docs: >-
+              limit the return number of members for the classroom, the default value is
+              1000
+            type: optional<double>
+        body:
+          properties:
+            userId: commons.ObjectId
+      response: commons.ClassroomResponse
+
+    getStats:
+      path: /{classroomHandle}/stats
+      method: GET
+      docs: |
+        Returns a list of all members stats for the classroom.
+      path-parameters:
+        classroomHandle:
+          docs: The classroom's `_id`.
+          type: string
+      request:
+        name: ClassroomStatsRequest
+        query-parameters:
+          project:
+            docs: >
+              If specified, include only the specified projection of returned stats;
+              else, return all stats. Format as a comma-separated list, like
+              `creator,playtime,state.complete`.
+            type: optional<string>
+          memberLimit:
+            docs: >-
+              Limit the return member number. the default value is 10, and the max value
+              is 100
+            type: optional<double>
+          memberSkip:
+            docs: |
+              Skip the members that doesn't need to return, for pagination
+            type: optional<double>
+      response: list<ClassroomStats>
+
+    getLevelsPlayedForUser:
+      path: /{classroomHandle}/members/{memberHandle}/sessions
+      method: GET
+      docs: |
+        Returns a list of all levels played by the user for the classroom.
+      path-parameters:
+        classroomHandle:
+          docs: The classroom's `_id`.
+          type: string
+        memberHandle:
+          docs: The classroom member's `_id`.
+          type: string
+      response: list<LevelSessionResponse>
 
 types:
-  
+
   ClassroomResponseWithCode:
     docs: Subset of properties listed here
     properties:
@@ -176,21 +174,21 @@ types:
       codeCamel: optional<string>
       courses: optional<list<commons.Course>>
       clanId: optional<commons.ObjectId>
-  
+
   AceConfig:
     properties:
       language: optional<string>
-  
+
   ClassroomStats:
     properties:
       _id: optional<commons.ObjectId>
       stats: optional<ClassroomStatsInfo>
-  
+
   ClassroomStatsInfo:
     properties:
       gamesCompleted: optional<double>
       playtime: optional<double>
-  
+
   LevelSessionResponse:
     properties:
       state: LevelSessionState
@@ -210,16 +208,16 @@ types:
         docs: For arenas. Whether or not the level has been added to the ladder.
       published:
         type: boolean
-        docs: For shareable projects. Whether or not the project has been shared
-          with classmates.
-  
-  LevelSessionState: 
+        docs: For shareable projects. Whether or not the project has been shared with
+          classmates.
+
+  LevelSessionState:
     properties:
       complete:
         type: boolean
-  
-  LevelSessionLevelInfo: 
-    properties: 
+
+  LevelSessionLevelInfo:
+    properties:
       original:
         type: string
         docs: The id for the level.

@@ -1,5 +1,5 @@
 types:
-  
+
   UserResponse:
     docs: Subset of properties listed here
     properties:
@@ -35,9 +35,9 @@ types:
 
   ObjectId: string
 
-  Datetime: 
+  Datetime:
     type: string
-    docs: | 
+    docs: |
       Has regex "/^\\d{4}-\\d{2}-\\d{2}T\\d{2}\\:\\d{2}\\:\\d{2}\\.\\d{3}Z$/"
 
   roleString:
@@ -53,7 +53,7 @@ types:
       ownerID: optional<ObjectId>
       description: optional<string>
       courses: optional<list<Course>>
-      
+
   Course:
     properties:
       _id: optional<ObjectId>
